@@ -121,6 +121,13 @@ def _data_table(headers, rows, accent_color):
 
 
 def _pie_chart_image(labels, values, colors, title):
+    # Guard against empty or zero values before drawing
+    if not values or sum(values) == 0:
+        raise ValueError(
+            f"Cannot draw pie chart '{title}' — all values are zero or empty. "
+            f"Labels: {labels}, Values: {values}"
+        )
+    
     fig, ax = plt.subplots(figsize=(5, 3.5))
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
@@ -180,7 +187,7 @@ def _pie_with_explanation(labels, values, colors, title, styles):
     elements.append(Paragraph(explanation_text, explanation_style))
     return elements
 
-
+#now with guard rails to prevent errors when there are no branches in the data
 def generate_branch_pdf(sales, expenses):
     import pandas as pd
     buffer = io.BytesIO()
@@ -247,21 +254,40 @@ def generate_branch_pdf(sales, expenses):
     story.append(_data_table(["Payment Method", "Transactions"], pay_rows, GREEN))
     story.append(Spacer(1, 0.5*cm))
 
+    # Guard — only draw pie if there is actual data
+    # Prevents "All wedge sizes are zero" crash when filtered data is empty
     story.append(Paragraph("Payment Method Split", styles["SectionHeader"]))
     story.append(HRFlowable(width="100%", thickness=0.5, color=BORDER, spaceAfter=6))
-    for el in _pie_with_explanation(pay_labels, pay_values, pay_colors,
-                                     "How customers are paying", styles):
-        story.append(el)
+    if sum(pay_values) > 0:
+        for el in _pie_with_explanation(pay_labels, pay_values, pay_colors,
+                                         "How customers are paying", styles):
+            story.append(el)
+    else:
+        story.append(Paragraph(
+            "No payment data available for this period.",
+            styles["BodyText2"]
+        ))
 
+    story.append(Spacer(1, 0.5*cm))
+
+    # Guard — same protection for channel pie chart
     story.append(Paragraph("Order Channel Split", styles["SectionHeader"]))
     story.append(HRFlowable(width="100%", thickness=0.5, color=BORDER, spaceAfter=6))
-    for el in _pie_with_explanation(chan_labels, chan_values, chan_colors,
-                                     "Where orders are coming from", styles):
-        story.append(el)
+    if sum(chan_values) > 0:
+        for el in _pie_with_explanation(chan_labels, chan_values, chan_colors,
+                                         "Where orders are coming from", styles):
+            story.append(el)
+    else:
+        story.append(Paragraph(
+            "No channel data available for this period.",
+            styles["BodyText2"]
+        ))
 
     doc.build(story)
     buffer.seek(0)
     return buffer.read()
+
+    
 
 
 def generate_regional_pdf(sales, expenses):
@@ -346,15 +372,27 @@ def generate_regional_pdf(sales, expenses):
 
     story.append(Paragraph("Payment Method Split", styles["SectionHeader"]))
     story.append(HRFlowable(width="100%", thickness=0.5, color=BORDER, spaceAfter=6))
-    for el in _pie_with_explanation(pay_labels, pay_values, pay_colors,
-                                     "How customers are paying", styles):
-        story.append(el)
+    if sum(pay_values) > 0:
+        for el in _pie_with_explanation(pay_labels, pay_values, pay_colors,
+                                         "How customers are paying", styles):
+            story.append(el)
+    else:
+        story.append(Paragraph(
+            "No payment data available for this period.",
+            styles["BodyText2"]
+        ))
 
     story.append(Paragraph("Membership vs Walk-in Split", styles["SectionHeader"]))
     story.append(HRFlowable(width="100%", thickness=0.5, color=BORDER, spaceAfter=6))
-    for el in _pie_with_explanation(mem_labels, mem_values, mem_colors,
-                                     "Loyalty membership penetration", styles):
-        story.append(el)
+    if sum(mem_values) > 0:
+        for el in _pie_with_explanation(mem_labels, mem_values, mem_colors,
+                                         "Loyalty membership penetration", styles):
+            story.append(el)
+    else:
+        story.append(Paragraph(
+            "No membership data available for this period.",
+            styles["BodyText2"]
+        ))
 
     doc.build(story)
     buffer.seek(0)
@@ -441,15 +479,27 @@ def generate_operations_pdf(sales, expenses):
 
     story.append(Paragraph("Transaction Status Breakdown", styles["SectionHeader"]))
     story.append(HRFlowable(width="100%", thickness=0.5, color=BORDER, spaceAfter=6))
-    for el in _pie_with_explanation(stat_labels, stat_values, stat_colors,
-                                     "Completed vs failed transactions network-wide", styles):
-        story.append(el)
+    if sum(stat_values) > 0:
+        for el in _pie_with_explanation(stat_labels, stat_values, stat_colors,
+                                         "Completed vs failed transactions network-wide", styles):
+            story.append(el)
+    else:
+        story.append(Paragraph(
+            "No transaction data available for this period.",
+            styles["BodyText2"]
+        ))
 
     story.append(Paragraph("Expense Category Breakdown", styles["SectionHeader"]))
     story.append(HRFlowable(width="100%", thickness=0.5, color=BORDER, spaceAfter=6))
-    for el in _pie_with_explanation(exp_labels, exp_values, exp_colors,
-                                     "Where network expenses are being spent", styles):
-        story.append(el)
+    if sum(exp_values) > 0:
+        for el in _pie_with_explanation(exp_labels, exp_values, exp_colors,
+                                         "Where network expenses are being spent", styles):
+            story.append(el)
+    else:
+        story.append(Paragraph(
+            "No expense data available for this period.",
+            styles["BodyText2"]
+        ))
 
     doc.build(story)
     buffer.seek(0)

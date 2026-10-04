@@ -1,12 +1,16 @@
-import os
 import psycopg2
+import pandas as pd
+import os
+from dotenv import load_dotenv
+# import streamlit as st
 
-# # Neon PostgreSQL connection string — get this from Bukolami
-# # Format: postgresql://user:password@host/dbname?sslmode=require
-# CONNECTION_STRING = "YOUR_NEON_CONNECTION_STRING_HERE"
+# Neon PostgreSQL connection string — get this from Bukolami
+# Format: postgresql://user:password@host/dbname?sslmode=require
+# CONNECTION_STRING = st.secrets["database"]["url"]
+load_dotenv()
 CONNECTION_STRING = os.getenv('DATABASE_URL')
 
-def get_db_sales():
+def get_sales():
     conn = psycopg2.connect(CONNECTION_STRING)
     query = """
         SELECT 
@@ -25,7 +29,7 @@ def get_db_sales():
     conn.close()
     return df
 
-def get_db_expenses():
+def get_expenses():
     conn = psycopg2.connect(CONNECTION_STRING)
     query = """
         SELECT 
@@ -41,55 +45,28 @@ def get_db_expenses():
     conn.close()
     return df
 
-# def get_top_items(branch_id=None, limit=8):
-#     # Uses sales_items table — do NOT parse order_items string
-#     # Bukolami has already normalized this into the sales_items table
-#     conn = psycopg2.connect(CONNECTION_STRING)
-#     query = """
-#         SELECT 
-#             m.item_name,
-#             SUM(si.quantity) as total_quantity
-#         FROM sales_items si
-#         JOIN menu_items m ON si.menu_item_id = m.menu_item_id
-#         JOIN sales s ON si.record_id = s.record_id
-#         WHERE s.transaction_status = 'COMPLETED'
-#         {branch_filter}
-#         GROUP BY m.item_name
-#         ORDER BY total_quantity DESC
-#         LIMIT %(limit)s
-#     """.format(
-#         branch_filter="AND s.branch_id = %(branch_id)s" if branch_id else ""
-#     )
-#     params = {"limit": limit}
-#     if branch_id:
-#         params["branch_id"] = branch_id
-#     df = pd.read_sql(query, conn, params=params)
-#     conn.close()
-#     return df
-
-
-
-import requests
-import pandas as pd
-
-# This is temporary — points at the raw S3 batch directly
-# On Day 7 this gets replaced with a real Neon PostgreSQL connection
-
-BATCH_URL = "https://qufoods-raw.s3.amazonaws.com/year=2026/month=06/day=17/batch_BATCH-96bd24c2-7124-4fb5-93e8-f016bd600d67_20260617T154538Z.json"
-
-def get_data():
-    try:
-        response = requests.get(BATCH_URL, timeout=5)
-        response.raise_for_status()
-        batch = response.json()
-        records = batch["records"]
-    except Exception:
-        # Fallback to local data if S3 is unreachable
-        import json, os
-        local_path = os.path.join(os.path.dirname(__file__), "batch_local.json")
-        with open(local_path) as f:
-            batch = json.load(f)
-        records = batch["records"]
-    
-    df = pd.DataFrame(records)
+def get_top_items(branch_id=None, limit=8):
+    # Uses sales_items table — do NOT parse order_items string
+    # Bukolami has already normalized this into the sales_items table
+    conn = psycopg2.connect(CONNECTION_STRING)
+    query = """
+        SELECT 
+            m.item_name,
+            SUM(si.quantity) as total_quantity
+        FROM sales_items si
+        JOIN menu_items m ON si.menu_item_id = m.menu_item_id
+        JOIN sales s ON si.record_id = s.record_id
+        WHERE s.transaction_status = 'COMPLETED'
+        {branch_filter}
+        GROUP BY m.item_name
+        ORDER BY total_quantity DESC
+        LIMIT %(limit)s
+    """.format(
+        branch_filter="AND s.branch_id = %(branch_id)s" if branch_id else ""
+    )
+    params = {"limit": limit}
+    if branch_id:
+        params["branch_id"] = branch_id
+    df = pd.read_sql(query, conn, params=params)
+    conn.close()
     return df

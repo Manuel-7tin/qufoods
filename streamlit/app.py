@@ -1,16 +1,20 @@
 import streamlit as st
+import psycopg2
+from pathlib import Path
 import plotly.express as px
 from pdf import generate_branch_pdf, generate_regional_pdf, generate_operations_pdf
 from bedrock import generate_narrative, build_branch_prompt, build_regional_prompt, build_operations_prompt
+from db import get_sales, get_expenses
 from queries import (
-    get_sales, get_expenses, revenue_by_branch,
-    total_revenue, average_order_value, failed_transaction_count,
+    revenue_by_branch, total_revenue, average_order_value, failed_transaction_count,
     payment_method_split, top_ordered_items,
     regional_revenue, revenue_vs_expenses, membership_penetration, 
     top_and_bottom_branch, top_5_branches, bottom_5_branches, 
     network_transaction_status, total_expenses_network,
     revenue_by_region, imputation_summary, filter_by_period
 )
+# from db import check_schema
+# check_schema()
 
 # This codeblock controls the chart rendering and the color scheme of the charts
 
@@ -68,16 +72,24 @@ def render_chart(df, x, y, title, colors, chart_type, key):
         st.plotly_chart(fig, use_container_width=True)
 
     elif chart_type_selected == "Pie":
-        fig = px.pie(
-            df, names=x, values=y, title=title,
-            color_discrete_sequence=colors,
-            template="plotly_dark"
-        )
-        fig.update_layout(
-            plot_bgcolor="#161b22",
-            paper_bgcolor="#161b22"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        # Pie charts are only readable with 6 or fewer categories
+        # More than 6 slices becomes unreadable — guide the manager to use Bar or Line
+        if len(df) > 6:
+            st.info(
+                f"Pie chart works best with 6 or fewer categories. "
+                f"This chart has {len(df)} — switch to Bar or Line for a clearer view."
+            )
+        else:
+            fig = px.pie(
+                df, names=x, values=y, title=title,
+                color_discrete_sequence=colors,
+                template="plotly_dark"
+            )
+            fig.update_layout(
+                plot_bgcolor="#161b22",
+                paper_bgcolor="#161b22"
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
 
 
@@ -89,8 +101,10 @@ st.set_page_config(
 )
 
 # Sidebar
-st.sidebar.image("Q-removebg-preview (1).png", width=180)
-st.sidebar.titxle(" REPORTS")
+logo_path = Path(__file__).parent / "qufoods_logo.png"
+st.sidebar.image(str(logo_path), width=180)
+
+st.sidebar.title(" REPORTS")
 st.sidebar.markdown("---")
 
 # Report type selector
@@ -185,8 +199,11 @@ if report_type == "Branch Report":
             aws_key = st.secrets["aws"]["access_key_id"]
             aws_secret = st.secrets["aws"]["secret_access_key"]
 
-            top_item = top_ordered_items(sales).index[0] if len(top_ordered_items(sales)) > 0 else "N/A"
-            top_pay = payment_method_split(sales).index[0] if len(payment_method_split(sales)) > 0 else "N/A"
+            items_df = top_ordered_items(sales)
+            top_item = items_df["item_name"].iloc[0] if len(items_df) > 0 else "N/A"
+
+            pay_df = payment_method_split(sales).reset_index()
+            top_pay = pay_df.iloc[0, 0] if len(pay_df) > 0 else "N/A"
 
             metrics = {
                 "total_revenue": f"₦{rev_total:,.0f}",
@@ -247,8 +264,9 @@ if report_type == "Branch Report":
 
     with col_right:
         # Top ordered items — green shades
-        items = top_ordered_items(sales).reset_index()
-        items.columns = ["Item", "Count"]
+        items = top_ordered_items(sales)
+        items = items.rename(columns={"item_name": "Item", "total_quantity": "Count"})
+        items = items[["Item", "Count"]]
         render_chart(
             items, "Item", "Count",
             "Top Ordered Items",
@@ -269,13 +287,22 @@ if report_type == "Branch Report":
         )
 
     st.markdown("---")
-    pdf_bytes = generate_branch_pdf(sales, expenses)
-    st.download_button(
-        label="Download Branch Report PDF",
-        data=pdf_bytes,
-        file_name="qufoods_branch_report.pdf",
-        mime="application/pdf"
-    )
+    try:
+        pdf_bytes = generate_branch_pdf(sales, expenses)
+        st.download_button(
+            label="Download Branch Report PDF",
+            data=pdf_bytes,
+            file_name="qufoods_branch_report.pdf",
+            mime="application/pdf"
+        )
+    except ValueError:
+        st.warning(
+            "No data available to generate this report. "
+            "Try selecting a different branch or time period."
+        )
+    except Exception as e:
+        st.warning("Report could not be generated. Please try again.")
+   
 
 
 
@@ -384,13 +411,21 @@ elif report_type == "Regional Report":
     )
 
     st.markdown("---")
-    pdf_bytes = generate_regional_pdf(sales, expenses)
-    st.download_button(
-        label="Download Regional Report PDF",
-        data=pdf_bytes,
-        file_name="qufoods_regional_report.pdf",
-        mime="application/pdf"
-    )
+    try:
+        pdf_bytes = generate_regional_pdf(sales, expenses)
+        st.download_button(
+            label="Download Regional Report PDF",
+            data=pdf_bytes,
+            file_name="qufoods_regional_report.pdf",
+            mime="application/pdf"
+        )
+    except ValueError:
+        st.warning(
+            "No data available to generate this report. "
+            "Try selecting a different branch or time period."
+        )
+    except Exception:
+        st.warning("Report could not be generated. Please try again.")
 
 
 # OPERATIONS REPORT
@@ -511,10 +546,18 @@ elif report_type == "Operations Report":
 
 
     st.markdown("---")
-    pdf_bytes = generate_operations_pdf(sales, expenses)
-    st.download_button(
-        label="Download Operations Report PDF",
-        data=pdf_bytes,
-        file_name="qufoods_operations_report.pdf",
-        mime="application/pdf"
-    )
+    try:
+        pdf_bytes = generate_operations_pdf(sales, expenses)
+        st.download_button(
+            label="Download Operations Report PDF",
+            data=pdf_bytes,
+            file_name="qufoods_operations_report.pdf",
+            mime="application/pdf"
+        )
+    except ValueError:
+        st.warning(
+            "No data available to generate this report. "
+            "Try selecting a different branch or time period."
+        )
+    except Exception:
+        st.warning("Report could not be generated. Please try again.")

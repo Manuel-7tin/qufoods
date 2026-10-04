@@ -1,29 +1,26 @@
 import pandas as pd
-from db import get_data, get_db_expenses, get_db_sales
+
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
 load_dotenv()
 
 def filter_by_period(sales, period):
-    # Filters the sales dataframe to only include records
-    # within the selected time window
-    # Uses customer_arrival_time as the transaction date
-    
     if period == "All":
-        # No filter — return everything
         return sales
 
-    # Convert arrival time to datetime if it isn't already
     sales = sales.copy()
+
+    # Timestamps from PostgreSQL come in ISO8601 format e.g. "2026-08-12T18:42:34Z"
+    # format='ISO8601' tells pandas to handle this format correctly
     sales["customer_arrival_time"] = pd.to_datetime(
-        sales["customer_arrival_time"], utc=True
+        sales["customer_arrival_time"],
+        format="ISO8601",
+        utc=True
     )
 
-    # Get current time in UTC
     now = datetime.now(timezone.utc)
 
-    # Calculate the cutoff date based on selected period
     if period == "Today":
         cutoff = now.replace(hour=0, minute=0, second=0, microsecond=0)
     elif period == "1W":
@@ -33,21 +30,17 @@ def filter_by_period(sales, period):
     elif period == "3M":
         cutoff = now - timedelta(days=90)
 
-    # Return only records on or after the cutoff
     return sales[sales["customer_arrival_time"] >= cutoff]
 
-def get_sales():
-    # df = get_data()
-    # sales = df[df["record_type"] == "SALE"].reset_index(drop=True)
-    sales = get_db_sales()
-    print("kolo:", sales)
-    return sales
+# def get_sales():
+#     df = get_data()
+#     sales = df[df["record_type"] == "SALE"].reset_index(drop=True)
+#     return sales
 
-def get_expenses():
-    # df = get_data()
-    # expenses = df[df["record_type"] == "EXPENSE"].reset_index(drop=True)
-    expenses = get_db_expenses()
-    return expenses
+# def get_expenses():
+#     df = get_data()
+#     expenses = df[df["record_type"] == "EXPENSE"].reset_index(drop=True)
+#     return expenses
 
 def revenue_by_branch(sales):
     completed = sales[
@@ -94,24 +87,13 @@ def payment_method_split(sales):
     # TEMPORARY — parses order_items string directly from S3 data
     # Replace with get_top_items() version on Day 7 DB swap
     # See db.py get_top_items() for the live database version
-def top_ordered_items(sales, top_n=8):
-    # Step 1: Use the typo-corrected column if it exists, otherwise use the original
-    # This means the chart works whether or not the cleaning step has run
-    items_col = "order_items_clean" if "order_items_clean" in sales.columns else "order_items"
 
-    # Step 2: Split each order string by comma to get individual item entries
-    # .explode() turns ["burger, coke", "zobo"] into three separate rows
-    items = (
-        sales[items_col]
-        .dropna()                          # ignore any rows where order_items is empty
-        .str.split(", ")                   # split "burger, coke" into ["burger", "coke"]
-        .explode()                         # one item per row
-        .str.replace(r"\(x\d+\)$", "", regex=True)  # strip "(x2)" from "burger(x2)"
-        .str.strip()                       # remove any leftover spaces
-    )
-
-    # Step 3: Count and return the top N items
-    return items.value_counts().head(top_n)
+    
+def top_ordered_items(sales=None, branch_id=None):
+    # Uses normalized sales_items table via db.get_top_items()
+    # Do NOT parse order_items string — ETL has already normalized this
+    from db import get_top_items
+    return get_top_items(branch_id=branch_id)
 
 
 

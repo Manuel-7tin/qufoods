@@ -55,13 +55,13 @@ def generate_narrative(prompt, aws_access_key_id, aws_secret_access_key):
         narrative = response_body["content"][0]["text"]
         return narrative.strip()
 
-    # except Exception as e:
-    #     # Silent failure — log the error but don't crash the report
-    #     print(f"Bedrock narrative generation failed: {e}")
-    #     return None
     except Exception as e:
-        # Temporary — raise the error so we can see what's wrong
-        raise e
+        # Silent failure — log the error but don't crash the report
+        print(f"Bedrock narrative generation failed: {e}")
+        return None
+    # except Exception as e:
+    #     # Temporary — raise the error so we can see what's wrong
+    #     raise e
 
 
 def build_branch_prompt(metrics):
