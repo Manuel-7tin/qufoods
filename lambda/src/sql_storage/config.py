@@ -11,7 +11,13 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+# DATABASE_URL = os.getenv("DATABASE_URL")
+username = os.getenv('DB_USERNAME')
+password = os.getenv('DB_PASSWORD')
+host = os.getenv('DB_HOST')
+port = os.getenv('DB_PORT')
+name = os.getenv('DB_NAME')
+DATABASE_URL = f"postgresql://{username}:{password}@{host}:{port}/{name}"
 
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL was not found in the .env file.")

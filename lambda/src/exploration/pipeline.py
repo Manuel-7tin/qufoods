@@ -67,6 +67,7 @@ class PipelineResult:
 
 
 def split_record_types(raw_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    # print(raw_df.head())
     sales_df = raw_df[raw_df["record_type"] == "SALE"].dropna(axis=1, how="all").reset_index(drop=True)
     expense_df = raw_df[raw_df["record_type"] == "EXPENSE"].dropna(axis=1, how="all").reset_index(drop=True)
     return sales_df, expense_df
@@ -162,6 +163,11 @@ def run(
         use_s3=use_s3, bucket=bucket, minutes=minutes, profile=profile, sample_dir=sample_dir
     )
     raw_df = ingest_result.raw_df
+    if len(raw_df) == 0:
+        print("No new data!")
+        exit(0)
+    # else:
+        # raw_df.to_csv("raw_df.csv")
 
     sales_df, expense_df = split_record_types(raw_df)
 
@@ -203,8 +209,15 @@ def run(
         "expense": duplicate_summary(expense_df, "record_id"),
     }
 
+    # FIX null values in customer_departure_time
+    sales_df["customer_departure_time"] = sales_df["customer_departure_time"].fillna("2000-01-01T00:00:00Z")
+
     # Save cleaned CSVs automatically
     if save:
+        import json
+        data = sales_df.astype(object).where(sales_df.notna(), None).to_dict()
+        m = json.dumps(data, indent=2)
+        # print(m)
         # save_outputs(sales_df, expense_df)
         upload_cleaned_data(sales_df, expense_df, ingest_result.source_keys)
         run_pipeline(sales_df, expense_df)

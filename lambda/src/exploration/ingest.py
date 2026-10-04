@@ -162,6 +162,34 @@ def load_batch_from_url(url: str) -> list[dict]:
 # This is what makes the exploration code runnable today, before AWS
 # access is confirmed, and what makes the unit tests deterministic.
 # ---------------------------------------------------------------------------
+# def pull_from_local(sample_dir: str | Path) -> IngestResult:
+#     """Read every `.json` batch file in `sample_dir` and flatten records.
+#
+#     `sample_dir` defaults (via the CLI / notebook) to
+#     `exploration/data/sample_batches/` which ships with one real batch
+#     pulled from the brief's example URL. Drop in more `.json` batch files
+#     here — same `{"batch_id", "ingested_at", "records": [...]}` shape — and
+#     every downstream profiling step scales with zero code changes.
+#     """
+#     sample_dir = Path(sample_dir)
+#     paths = sorted(sample_dir.glob("*.json"))
+#     if not paths:
+#         raise FileNotFoundError(
+#             f"No .json batch files found in {sample_dir}. "
+#             "Add at least one batch file matching the qufoods-raw format."
+#         )
+#
+#     records: list[dict] = []
+#     for path in paths:
+#         batch = json.loads(path.read_text())
+#         records.extend(batch.get("records", []))
+#
+#     logger.info("loaded %d record(s) from %d local batch file(s)", len(records), len(paths))
+#     return IngestResult(
+#         records=records,
+#         source_keys=[str(p) for p in paths],
+#         pulled_at=datetime.now(timezone.utc),
+#     )
 
 def pull_from_local(sample_dir: str | Path) -> IngestResult:
     """Read every `.json` batch file in `sample_dir` and flatten records.
@@ -174,8 +202,9 @@ def pull_from_local(sample_dir: str | Path) -> IngestResult:
     """
     from . import s3
 
+    previous_hour = datetime.now(timezone.utc) - timedelta(hours=1)
     BUCKET_NAME = "qufoods-raw"
-    TARGET_TIME = datetime(2026, 6, 17, 15, 51, tzinfo=timezone.utc)
+    # TARGET_TIME = datetime(2026, 9, 24, 12, 30, tzinfo=timezone.utc)
 
     paginator = s3.get_paginator("list_objects_v2")
 
@@ -187,7 +216,7 @@ def pull_from_local(sample_dir: str | Path) -> IngestResult:
         records: list[dict] = []
         paths: list[str] = []
         for obj in page["Contents"]:
-            if obj["LastModified"] >= TARGET_TIME:
+            if obj["LastModified"] >= previous_hour:
                 key = obj["Key"]
                 paths.append("https://qufoods-raw.s3.amazonaws.com/"+key)
                 response = s3.get_object(Bucket=BUCKET_NAME, Key=key)
@@ -220,6 +249,6 @@ def pull_batches(
     Switching from local dev to live data later is a one-line change
     (`use_s3=True`), not a rewrite.
     """
-    if use_s3:
-        return pull_from_s3(bucket=bucket, minutes=minutes, profile=profile)
-    return pull_from_local(sample_dir)
+    # if use_s3:
+    #     return pull_from_s3(bucket=bucket, minutes=minutes, profile=profile)
+    return pull_from_local(sample_dir) #Actually pulls from S3

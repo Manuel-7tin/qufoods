@@ -1,6 +1,9 @@
 import pandas as pd
 
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def filter_by_period(sales, period):
     if period == "All":

@@ -1,0 +1,2183 @@
+2026-08-01 17:56:36,784 | INFO | loaded 166 record(s) from 7 S3 batch file(s)
+2026-08-01 18:03:25,350 | INFO | loaded 166 record(s) from 7 S3 batch file(s)
+2026-08-01 18:03:27,944 | INFO | ============================================================
+2026-08-01 18:03:27,945 | INFO | Starting ETL Pipeline
+2026-08-01 18:03:27,945 | INFO | ============================================================
+2026-08-01 18:03:28,022 | INFO | CSV files loaded successfully.
+2026-08-01 18:03:28,022 | INFO | Loading branches...
+2026-08-01 18:03:48,612 | INFO | 20 branches loaded.
+2026-08-01 18:03:48,612 | INFO | Loading menu items...
+2026-08-01 18:03:52,474 | INFO | 13 menu items loaded.
+2026-08-01 18:03:52,474 | INFO | Loading sales...
+2026-08-01 18:03:54,297 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.CheckViolation: new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (a0f29880-80a2-41bd-92ed-38670696b1f2, TXN-67353179, BATCH-0299138e-441f-46ed-a76b-fb7e7a459a28, BR-20, null, IN_STORE, 4230.31, 0.00, 4230.31, CASH, REFUNDED, PHYSICAL, 2026-06-17 12:06:24, 2026-06-17 12:35:24, 2026-06-17 15:51:11, f, f, null).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 174, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 264, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.CheckViolation) new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (a0f29880-80a2-41bd-92ed-38670696b1f2, TXN-67353179, BATCH-0299138e-441f-46ed-a76b-fb7e7a459a28, BR-20, null, IN_STORE, 4230.31, 0.00, 4230.31, CASH, REFUNDED, PHYSICAL, 2026-06-17 12:06:24, 2026-06-17 12:35:24, 2026-06-17 15:51:11, f, f, null).
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': 'a0f29880-80a2-41bd-92ed-38670696b1f2', 'transaction_id': 'TXN-67353179', 'batch_id': 'BATCH-0299138e-441f-46ed-a76b-fb7e7a459a28', 'branch_id': 'BR-20', 'membership_id': None, 'order_channel': 'IN_STORE', 'order_subtotal': 4230.31, 'discount_applied': 0.0, 'total_amount': 4230.31, 'payment_method': 'CASH', 'transaction_status': 'REFUNDED', 'order_source': 'PHYSICAL', 'customer_arrival_time': '2026-06-17T12:06:24Z', 'customer_departure_time': '2026-06-17T12:35:24Z', 'ingested_at': '2026-06-17T15:51:11Z', 'order_items_typo_fixed': False, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-08-02 01:27:03,699 | INFO | loaded 166 record(s) from 7 S3 batch file(s)
+2026-08-02 01:27:09,281 | INFO | ============================================================
+2026-08-02 01:27:09,281 | INFO | Starting ETL Pipeline
+2026-08-02 01:27:09,281 | INFO | ============================================================
+2026-08-02 01:27:09,379 | INFO | CSV files loaded successfully.
+2026-08-02 01:27:09,379 | INFO | Loading branches...
+2026-08-02 01:27:20,214 | INFO | 20 branches loaded.
+2026-08-02 01:27:20,214 | INFO | Loading menu items...
+2026-08-02 01:27:23,491 | INFO | 13 menu items loaded.
+2026-08-02 01:27:23,491 | INFO | Loading sales...
+2026-08-02 01:27:25,154 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.CheckViolation: new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (a0f29880-80a2-41bd-92ed-38670696b1f2, TXN-67353179, BATCH-0299138e-441f-46ed-a76b-fb7e7a459a28, BR-20, null, IN_STORE, 4230.31, 0.00, 4230.31, CASH, REFUNDED, PHYSICAL, 2026-06-17 12:06:24, 2026-06-17 12:35:24, 2026-06-17 15:51:11, f, f, null).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 174, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 264, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.CheckViolation) new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (a0f29880-80a2-41bd-92ed-38670696b1f2, TXN-67353179, BATCH-0299138e-441f-46ed-a76b-fb7e7a459a28, BR-20, null, IN_STORE, 4230.31, 0.00, 4230.31, CASH, REFUNDED, PHYSICAL, 2026-06-17 12:06:24, 2026-06-17 12:35:24, 2026-06-17 15:51:11, f, f, null).
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': 'a0f29880-80a2-41bd-92ed-38670696b1f2', 'transaction_id': 'TXN-67353179', 'batch_id': 'BATCH-0299138e-441f-46ed-a76b-fb7e7a459a28', 'branch_id': 'BR-20', 'membership_id': None, 'order_channel': 'IN_STORE', 'order_subtotal': 4230.31, 'discount_applied': 0.0, 'total_amount': 4230.31, 'payment_method': 'CASH', 'transaction_status': 'REFUNDED', 'order_source': 'PHYSICAL', 'customer_arrival_time': '2026-06-17T12:06:24Z', 'customer_departure_time': '2026-06-17T12:35:24Z', 'ingested_at': '2026-06-17T15:51:11Z', 'order_items_typo_fixed': False, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-08-12 13:29:15,224 | INFO | Found credentials in shared credentials file: ~/.aws/credentials
+2026-08-12 13:29:18,038 | INFO | found 288 batch file(s) in the last 1440 minutes
+2026-08-12 13:29:18,049 | INFO | Found credentials in shared credentials file: ~/.aws/credentials
+2026-08-12 13:57:06,920 | INFO | loaded 26 record(s) from 1 local batch file(s)
+2026-08-12 13:57:15,432 | INFO | ============================================================
+2026-08-12 13:57:15,432 | INFO | Starting ETL Pipeline
+2026-08-12 13:57:15,432 | INFO | ============================================================
+2026-08-12 13:57:15,532 | INFO | CSV files loaded successfully.
+2026-08-12 13:57:15,533 | INFO | Loading branches...
+2026-08-12 13:57:43,764 | INFO | 20 branches loaded.
+2026-08-12 13:57:43,764 | INFO | Loading menu items...
+2026-08-12 13:57:53,254 | INFO | 13 menu items loaded.
+2026-08-12 13:57:53,254 | INFO | Loading sales...
+2026-08-12 13:58:03,024 | INFO | 22 sales loaded.
+2026-08-12 13:58:03,025 | INFO | Loading sales items...
+2026-08-12 13:58:11,307 | WARNING | Menu item not found: ocke
+2026-08-12 13:58:12,483 | WARNING | Menu item not found: ckoe
+2026-08-12 13:58:14,938 | WARNING | Menu item not found: chickne wings
+2026-08-12 13:58:16,124 | WARNING | Menu item not found: ofada irce
+2026-08-12 13:58:17,814 | WARNING | Menu item not found: chicekn wings
+2026-08-12 13:58:19,063 | INFO | 46 sales items loaded.
+2026-08-12 13:58:19,063 | INFO | Loading expenses...
+2026-08-12 13:58:20,125 | INFO | 4 expenses loaded.
+2026-08-12 13:58:20,474 | INFO | ETL completed successfully.
+2026-08-12 14:16:10,276 | INFO | loaded 548 record(s) from 22 S3 batch file(s)
+2026-08-12 14:16:19,221 | INFO | ============================================================
+2026-08-12 14:16:19,221 | INFO | Starting ETL Pipeline
+2026-08-12 14:16:19,221 | INFO | ============================================================
+2026-08-12 14:16:19,262 | INFO | CSV files loaded successfully.
+2026-08-12 14:16:19,262 | INFO | Loading branches...
+2026-08-12 14:16:27,059 | INFO | 20 branches loaded.
+2026-08-12 14:16:27,059 | INFO | Loading menu items...
+2026-08-12 14:16:30,231 | INFO | 13 menu items loaded.
+2026-08-12 14:16:30,231 | INFO | Loading sales...
+2026-08-12 14:16:38,187 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.DatatypeMismatch: column "customer_departure_time" is of type timestamp without time zone but expression is of type double precision
+LINE 38:             'NaN'::float,
+                     ^
+HINT:  You will need to rewrite or cast the expression.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 174, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 264, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.DatatypeMismatch) column "customer_departure_time" is of type timestamp without time zone but expression is of type double precision
+LINE 38:             'NaN'::float,
+                     ^
+HINT:  You will need to rewrite or cast the expression.
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': 'da89818a-85b3-43db-8c5e-74e3d55afef1', 'transaction_id': 'TXN-25916748', 'batch_id': 'BATCH-d0da6120-30a4-4bca-ad97-71bc6ae4f1cf', 'branch_id': 'BR-05', 'membership_id': None, 'order_channel': 'IN_STORE', 'order_subtotal': 11309.65, 'discount_applied': 0.0, 'total_amount': 11309.65, 'payment_method': 'CASH', 'transaction_status': 'COMPLETED', 'order_source': 'PHYSICAL', 'customer_arrival_time': '2026-08-12T11:49:06Z', 'customer_departure_time': nan, 'ingested_at': '2026-08-12T12:32:51Z', 'order_items_typo_fixed': False, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-08-12 14:27:31,821 | INFO | loaded 597 record(s) from 24 S3 batch file(s)
+2026-08-12 14:27:36,474 | INFO | ============================================================
+2026-08-12 14:27:36,474 | INFO | Starting ETL Pipeline
+2026-08-12 14:27:36,474 | INFO | ============================================================
+2026-08-12 14:27:36,536 | INFO | CSV files loaded successfully.
+2026-08-12 14:27:36,536 | INFO | Loading branches...
+2026-08-12 14:27:54,014 | INFO | 20 branches loaded.
+2026-08-12 14:27:54,014 | INFO | Loading menu items...
+2026-08-12 14:27:57,004 | INFO | 13 menu items loaded.
+2026-08-12 14:27:57,004 | INFO | Loading sales...
+2026-08-12 14:28:30,273 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.DatatypeMismatch: column "customer_departure_time" is of type timestamp with time zone but expression is of type double precision
+LINE 38:             'NaN'::float,
+                     ^
+HINT:  You will need to rewrite or cast the expression.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 174, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 264, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.DatatypeMismatch) column "customer_departure_time" is of type timestamp with time zone but expression is of type double precision
+LINE 38:             'NaN'::float,
+                     ^
+HINT:  You will need to rewrite or cast the expression.
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': 'da89818a-85b3-43db-8c5e-74e3d55afef1', 'transaction_id': 'TXN-25916748', 'batch_id': 'BATCH-d0da6120-30a4-4bca-ad97-71bc6ae4f1cf', 'branch_id': 'BR-05', 'membership_id': None, 'order_channel': 'IN_STORE', 'order_subtotal': 11309.65, 'discount_applied': 0.0, 'total_amount': 11309.65, 'payment_method': 'CASH', 'transaction_status': 'COMPLETED', 'order_source': 'PHYSICAL', 'customer_arrival_time': '2026-08-12T11:49:06Z', 'customer_departure_time': nan, 'ingested_at': '2026-08-12T12:32:51Z', 'order_items_typo_fixed': False, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-08-12 14:34:56,328 | INFO | loaded 651 record(s) from 26 S3 batch file(s)
+2026-08-12 14:36:59,295 | INFO | loaded 651 record(s) from 26 S3 batch file(s)
+2026-08-12 14:58:03,616 | INFO | loaded 756 record(s) from 30 S3 batch file(s)
+2026-08-12 15:01:39,311 | INFO | loaded 780 record(s) from 31 S3 batch file(s)
+2026-08-12 15:22:25,588 | INFO | loaded 856 record(s) from 34 S3 batch file(s)
+2026-08-12 15:22:37,674 | INFO | ============================================================
+2026-08-12 15:22:37,674 | INFO | Starting ETL Pipeline
+2026-08-12 15:22:37,674 | INFO | ============================================================
+2026-08-12 15:22:37,785 | INFO | CSV files loaded successfully.
+2026-08-12 15:22:37,786 | INFO | Loading branches...
+2026-08-12 15:22:58,410 | INFO | 20 branches loaded.
+2026-08-12 15:22:58,411 | INFO | Loading menu items...
+2026-08-12 15:23:02,577 | INFO | 13 menu items loaded.
+2026-08-12 15:23:02,577 | INFO | Loading sales...
+2026-08-12 15:33:22,168 | INFO | 820 sales loaded.
+2026-08-12 15:33:22,169 | INFO | Loading sales items...
+2026-08-12 15:33:25,725 | WARNING | Menu item not found: jollofr ice
+2026-08-12 15:34:02,762 | WARNING | Menu item not found: ocke
+2026-08-12 15:34:36,296 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(fe3a3ad0-476a-401e-840b-2dd792e3218c) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 176, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 389, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(fe3a3ad0-476a-401e-840b-2dd792e3218c) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': 'fe3a3ad0-476a-401e-840b-2dd792e3218c', 'menu_item_id': 15, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-08-12 15:53:16,216 | INFO | loaded 193 record(s) from 7 S3 batch file(s)
+2026-08-12 15:53:20,489 | INFO | ============================================================
+2026-08-12 15:53:20,490 | INFO | Starting ETL Pipeline
+2026-08-12 15:53:20,490 | INFO | ============================================================
+2026-08-12 15:53:20,589 | INFO | CSV files loaded successfully.
+2026-08-12 15:53:20,590 | INFO | Loading branches...
+2026-08-12 15:53:45,268 | INFO | 20 branches loaded.
+2026-08-12 15:53:45,269 | INFO | Loading menu items...
+2026-08-12 15:53:48,133 | INFO | 13 menu items loaded.
+2026-08-12 15:53:48,133 | INFO | Loading sales...
+2026-08-12 15:57:03,162 | INFO | 183 sales loaded.
+2026-08-12 15:57:03,162 | INFO | Loading sales items...
+2026-08-12 15:57:14,081 | WARNING | Menu item not found: grillde fish
+2026-08-12 15:57:14,871 | WARNING | Menu item not found: grilled fihs
+2026-08-12 15:57:15,496 | WARNING | Menu item not found: hcapman
+2026-08-12 15:57:47,647 | WARNING | Menu item not found: plantani
+2026-08-12 15:58:22,284 | WARNING | Menu item not found: coek
+2026-08-12 15:58:52,660 | WARNING | Menu item not found: girlled fish
+2026-08-12 15:59:23,723 | WARNING | Menu item not found: grilled ifsh
+2026-08-12 15:59:24,167 | WARNING | Menu item not found: ocleslaw
+2026-08-12 15:59:25,241 | WARNING | Menu item not found: ubrger
+2026-08-12 15:59:25,647 | WARNING | Menu item not found: wtaer
+2026-08-12 15:59:26,480 | WARNING | Menu item not found: fried rcie
+2026-08-12 16:00:06,968 | WARNING | Menu item not found: chicken wigns
+2026-08-12 16:00:08,095 | WARNING | Menu item not found: freid rice
+2026-08-12 16:00:28,950 | WARNING | Menu item not found: burgre
+2026-08-12 16:00:29,887 | WARNING | Menu item not found: plnatain
+2026-08-12 16:00:32,519 | WARNING | Menu item not found: chicke nwings
+2026-08-12 16:00:34,588 | WARNING | Menu item not found: champan
+2026-08-12 16:00:35,141 | WARNING | Menu item not found: freid rice
+2026-08-12 16:00:36,265 | WARNING | Menu item not found: colelsaw
+2026-08-12 16:01:48,610 | WARNING | Menu item not found: buregr
+2026-08-12 16:01:50,170 | WARNING | Menu item not found: ofada rcie
+2026-08-12 16:01:51,639 | WARNING | Menu item not found: bruger
+2026-08-12 16:02:27,834 | WARNING | Menu item not found: ofadar ice
+2026-08-12 16:02:56,178 | WARNING | Menu item not found: cahpman
+2026-08-12 16:02:58,621 | WARNING | Menu item not found: chikcen wings
+2026-08-12 16:02:59,192 | WARNING | Menu item not found: jollof rcie
+2026-08-12 16:03:01,391 | WARNING | Menu item not found: zboo
+2026-08-12 16:03:01,982 | INFO | 431 sales items loaded.
+2026-08-12 16:03:01,982 | INFO | Loading expenses...
+2026-08-12 16:03:03,990 | INFO | 10 expenses loaded.
+2026-08-12 16:03:04,197 | INFO | ETL completed successfully.
+2026-08-12 16:27:00,280 | INFO | loaded 218 record(s) from 8 S3 batch file(s)
+2026-08-12 16:27:24,611 | INFO | ============================================================
+2026-08-12 16:27:24,612 | INFO | Starting ETL Pipeline
+2026-08-12 16:27:24,612 | INFO | ============================================================
+2026-08-12 16:27:24,703 | INFO | CSV files loaded successfully.
+2026-08-12 16:27:24,703 | INFO | Loading branches...
+2026-08-12 16:27:33,709 | INFO | 20 branches loaded.
+2026-08-12 16:27:33,709 | INFO | Loading menu items...
+2026-08-12 16:27:36,661 | INFO | 13 menu items loaded.
+2026-08-12 16:27:36,662 | INFO | Loading sales...
+2026-08-12 16:31:29,931 | INFO | 208 sales loaded.
+2026-08-12 16:31:29,931 | INFO | Loading sales items...
+2026-08-12 16:31:35,440 | WARNING | Menu item not found: grillde fish
+2026-08-12 16:32:02,999 | WARNING | Menu item not found: grilled fihs
+2026-08-12 16:32:03,673 | WARNING | Menu item not found: hcapman
+2026-08-12 16:32:08,015 | WARNING | Menu item not found: plantani
+2026-08-12 16:32:41,399 | WARNING | Menu item not found: coek
+2026-08-12 16:33:47,035 | WARNING | Menu item not found: puff pfuf
+2026-08-12 16:33:48,260 | WARNING | Menu item not found: zoob
+2026-08-12 16:33:50,664 | WARNING | Menu item not found: chickne wings
+2026-08-12 16:34:24,325 | WARNING | Menu item not found: girlled fish
+2026-08-12 16:35:28,510 | WARNING | Menu item not found: grilled ifsh
+2026-08-12 16:35:28,923 | WARNING | Menu item not found: ocleslaw
+2026-08-12 16:35:29,948 | WARNING | Menu item not found: ubrger
+2026-08-12 16:35:30,351 | WARNING | Menu item not found: wtaer
+2026-08-12 16:35:31,177 | WARNING | Menu item not found: fried rcie
+2026-08-12 16:36:04,452 | WARNING | Menu item not found: chicken wigns
+2026-08-12 16:36:05,787 | WARNING | Menu item not found: freid rice
+2026-08-12 16:36:07,333 | WARNING | Menu item not found: burgre
+2026-08-12 16:36:08,347 | WARNING | Menu item not found: plnatain
+2026-08-12 16:36:38,259 | WARNING | Menu item not found: chicke nwings
+2026-08-12 16:36:40,500 | WARNING | Menu item not found: champan
+2026-08-12 16:36:41,115 | WARNING | Menu item not found: freid rice
+2026-08-12 16:36:42,343 | WARNING | Menu item not found: colelsaw
+2026-08-12 16:37:51,387 | WARNING | Menu item not found: buregr
+2026-08-12 16:37:51,774 | WARNING | Menu item not found: ofada rcie
+2026-08-12 16:37:53,002 | WARNING | Menu item not found: bruger
+2026-08-12 16:37:55,258 | WARNING | Menu item not found: ofadar ice
+2026-08-12 16:38:28,396 | WARNING | Menu item not found: cahpman
+2026-08-12 16:38:58,069 | WARNING | Menu item not found: chikcen wings
+2026-08-12 16:38:58,648 | WARNING | Menu item not found: jollof rcie
+2026-08-12 16:39:00,890 | WARNING | Menu item not found: zboo
+2026-08-12 16:39:01,512 | INFO | 481 sales items loaded.
+2026-08-12 16:39:01,512 | INFO | Loading expenses...
+2026-08-12 16:39:03,583 | INFO | 10 expenses loaded.
+2026-08-12 16:39:03,778 | INFO | ETL completed successfully.
+2026-09-24 10:15:59,246 | INFO | loaded 0 record(s) from 0 S3 batch file(s)
+2026-09-24 10:18:10,844 | INFO | loaded 0 record(s) from 0 S3 batch file(s)
+2026-09-24 10:28:27,548 | INFO | loaded 602 record(s) from 24 S3 batch file(s)
+2026-09-24 10:28:36,085 | INFO | ============================================================
+2026-09-24 10:28:36,085 | INFO | Starting ETL Pipeline
+2026-09-24 10:28:36,085 | INFO | ============================================================
+2026-09-24 10:28:36,190 | INFO | CSV files loaded successfully.
+2026-09-24 10:28:36,190 | INFO | Loading branches...
+2026-09-24 10:28:40,755 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 144, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3319, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 178, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 176, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+    self.__connect()
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "db.zmdvswswlmltaowdjxls.supabase.co" (2a05:d018:1701:d200:78f7:22bd:faf0:6bd7), port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 169, in run_pipeline
+    load_branches(session, branches_df)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 109, in load_branches
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2261, in _execute_internal
+    conn = self._connection_for_bind(bind)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2113, in _connection_for_bind
+    return trans._connection_for_bind(engine, execution_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 2, in _connection_for_bind
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1191, in _connection_for_bind
+    conn = bind.connect()
+           ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3295, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 146, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2450, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 144, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3319, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 178, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 176, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+    self.__connect()
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "db.zmdvswswlmltaowdjxls.supabase.co" (2a05:d018:1701:d200:78f7:22bd:faf0:6bd7), port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-09-24 10:39:04,383 | INFO | loaded 660 record(s) from 26 S3 batch file(s)
+2026-09-24 10:39:11,981 | INFO | ============================================================
+2026-09-24 10:39:11,981 | INFO | Starting ETL Pipeline
+2026-09-24 10:39:11,982 | INFO | ============================================================
+2026-09-24 10:39:12,060 | INFO | CSV files loaded successfully.
+2026-09-24 10:39:12,060 | INFO | Loading branches...
+2026-09-24 10:39:14,631 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 144, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3319, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 178, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 176, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+    self.__connect()
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "db.zmdvswswlmltaowdjxls.supabase.co" (2a05:d018:1701:d200:78f7:22bd:faf0:6bd7), port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 169, in run_pipeline
+    load_branches(session, branches_df)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 109, in load_branches
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2261, in _execute_internal
+    conn = self._connection_for_bind(bind)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2113, in _connection_for_bind
+    return trans._connection_for_bind(engine, execution_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 2, in _connection_for_bind
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1191, in _connection_for_bind
+    conn = bind.connect()
+           ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3295, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 146, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2450, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 144, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3319, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 178, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 176, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+    self.__connect()
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "db.zmdvswswlmltaowdjxls.supabase.co" (2a05:d018:1701:d200:78f7:22bd:faf0:6bd7), port 5432 failed: Network is unreachable
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-09-24 10:56:43,000 | INFO | loaded 729 record(s) from 29 S3 batch file(s)
+2026-09-24 10:56:49,115 | INFO | ============================================================
+2026-09-24 10:56:49,115 | INFO | Starting ETL Pipeline
+2026-09-24 10:56:49,115 | INFO | ============================================================
+2026-09-24 10:56:49,185 | INFO | CSV files loaded successfully.
+2026-09-24 10:56:49,185 | INFO | Loading branches...
+2026-09-24 10:56:56,997 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 144, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3319, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 178, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 176, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+    self.__connect()
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "aws-1-eu-west-1.pooler.supabase.com" (54.247.26.119), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "aws-1-eu-west-1.pooler.supabase.com" (54.247.26.119), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 169, in run_pipeline
+    load_branches(session, branches_df)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 109, in load_branches
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2261, in _execute_internal
+    conn = self._connection_for_bind(bind)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2113, in _connection_for_bind
+    return trans._connection_for_bind(engine, execution_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 2, in _connection_for_bind
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1191, in _connection_for_bind
+    conn = bind.connect()
+           ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3295, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 146, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2450, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 144, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3319, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 178, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 176, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+    self.__connect()
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "aws-1-eu-west-1.pooler.supabase.com" (54.247.26.119), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "aws-1-eu-west-1.pooler.supabase.com" (54.247.26.119), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-09-24 11:02:36,738 | INFO | loaded 758 record(s) from 30 S3 batch file(s)
+2026-09-24 11:02:45,465 | INFO | ============================================================
+2026-09-24 11:02:45,465 | INFO | Starting ETL Pipeline
+2026-09-24 11:02:45,465 | INFO | ============================================================
+2026-09-24 11:02:45,530 | INFO | CSV files loaded successfully.
+2026-09-24 11:02:45,530 | INFO | Loading branches...
+2026-09-24 11:02:55,893 | INFO | 20 branches loaded.
+2026-09-24 11:02:55,893 | INFO | Loading menu items...
+2026-09-24 11:02:57,881 | INFO | 13 menu items loaded.
+2026-09-24 11:02:57,882 | INFO | Loading sales...
+2026-09-24 11:02:58,676 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.CheckViolation: new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (c1e4f29b-abc6-4c64-a92d-54525921dfe0, TXN-33075785, BATCH-03b1f12c-94de-4de0-a49b-e955194d452f, BR-01, null, IN_STORE, 494.43, 0.00, 494.43, POS, REFUNDED, PHYSICAL, 2026-09-24 18:51:12, 2026-09-24 19:23:12, 2026-09-24 08:22:51, f, f, null).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 176, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 271, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.CheckViolation) new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (c1e4f29b-abc6-4c64-a92d-54525921dfe0, TXN-33075785, BATCH-03b1f12c-94de-4de0-a49b-e955194d452f, BR-01, null, IN_STORE, 494.43, 0.00, 494.43, POS, REFUNDED, PHYSICAL, 2026-09-24 18:51:12, 2026-09-24 19:23:12, 2026-09-24 08:22:51, f, f, null).
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': 'c1e4f29b-abc6-4c64-a92d-54525921dfe0', 'transaction_id': 'TXN-33075785', 'batch_id': 'BATCH-03b1f12c-94de-4de0-a49b-e955194d452f', 'branch_id': 'BR-01', 'membership_id': None, 'order_channel': 'IN_STORE', 'order_subtotal': 494.43, 'discount_applied': 0.0, 'total_amount': 494.43, 'payment_method': 'POS', 'transaction_status': 'REFUNDED', 'order_source': 'PHYSICAL', 'customer_arrival_time': '2026-09-24T18:51:12Z', 'customer_departure_time': '2026-09-24T19:23:12Z', 'ingested_at': '2026-09-24T08:22:51Z', 'order_items_typo_fixed': False, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 11:07:43,511 | INFO | loaded 780 record(s) from 31 S3 batch file(s)
+2026-09-24 11:07:55,060 | INFO | ============================================================
+2026-09-24 11:07:55,060 | INFO | Starting ETL Pipeline
+2026-09-24 11:07:55,060 | INFO | ============================================================
+2026-09-24 11:07:55,124 | INFO | CSV files loaded successfully.
+2026-09-24 11:07:55,124 | INFO | Loading branches...
+2026-09-24 11:08:03,919 | INFO | 20 branches loaded.
+2026-09-24 11:08:03,920 | INFO | Loading menu items...
+2026-09-24 11:08:06,012 | INFO | 13 menu items loaded.
+2026-09-24 11:08:06,012 | INFO | Loading sales...
+2026-09-24 11:08:07,594 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.CheckViolation: new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (3355c559-58d6-4af8-b8cc-d13ff00a02c0, TXN-15450589, BATCH-03b1f12c-94de-4de0-a49b-e955194d452f, BR-02, null, IN_STORE, 12377.32, 0.20, 9901.86, CASH, PENDING, ONLINE, 2026-09-24 13:49:21, 2026-09-24 14:19:21, 2026-09-24 08:22:51, f, f, null).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 176, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 271, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.CheckViolation) new row for relation "sales" violates check constraint "sales_transaction_status_check"
+DETAIL:  Failing row contains (3355c559-58d6-4af8-b8cc-d13ff00a02c0, TXN-15450589, BATCH-03b1f12c-94de-4de0-a49b-e955194d452f, BR-02, null, IN_STORE, 12377.32, 0.20, 9901.86, CASH, PENDING, ONLINE, 2026-09-24 13:49:21, 2026-09-24 14:19:21, 2026-09-24 08:22:51, f, f, null).
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': '3355c559-58d6-4af8-b8cc-d13ff00a02c0', 'transaction_id': 'TXN-15450589', 'batch_id': 'BATCH-03b1f12c-94de-4de0-a49b-e955194d452f', 'branch_id': 'BR-02', 'membership_id': None, 'order_channel': 'IN_STORE', 'order_subtotal': 12377.32, 'discount_applied': 0.2, 'total_amount': 9901.86, 'payment_method': 'CASH', 'transaction_status': 'PENDING', 'order_source': 'ONLINE', 'customer_arrival_time': '2026-09-24T13:49:21Z', 'customer_departure_time': '2026-09-24T14:19:21Z', 'ingested_at': '2026-09-24T08:22:51Z', 'order_items_typo_fixed': False, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 11:13:25,116 | INFO | loaded 824 record(s) from 33 S3 batch file(s)
+2026-09-24 11:13:34,946 | INFO | ============================================================
+2026-09-24 11:13:34,946 | INFO | Starting ETL Pipeline
+2026-09-24 11:13:34,946 | INFO | ============================================================
+2026-09-24 11:13:35,008 | INFO | CSV files loaded successfully.
+2026-09-24 11:13:35,008 | INFO | Loading branches...
+2026-09-24 11:13:45,238 | INFO | 20 branches loaded.
+2026-09-24 11:13:45,239 | INFO | Loading menu items...
+2026-09-24 11:13:47,459 | INFO | 13 menu items loaded.
+2026-09-24 11:13:47,460 | INFO | Loading sales...
+2026-09-24 11:14:01,121 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.DatatypeMismatch: column "customer_departure_time" is of type timestamp without time zone but expression is of type double precision
+LINE 38:             'NaN'::float,
+                     ^
+HINT:  You will need to rewrite or cast the expression.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 176, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 271, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.DatatypeMismatch) column "customer_departure_time" is of type timestamp without time zone but expression is of type double precision
+LINE 38:             'NaN'::float,
+                     ^
+HINT:  You will need to rewrite or cast the expression.
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': '13b09e7f-0453-4b90-9acd-f395a1b63b53', 'transaction_id': 'TXN-63416178', 'batch_id': 'BATCH-1d61f344-5c50-469b-b8a1-490d9e872f36', 'branch_id': 'BR-08', 'membership_id': 'MBR-999618', 'order_channel': 'IN_STORE', 'order_subtotal': 10659.94, 'discount_applied': 0.0, 'total_amount': 10659.94, 'payment_method': 'CASH', 'transaction_status': 'COMPLETED', 'order_source': 'PHYSICAL', 'customer_arrival_time': '2026-09-24T18:23:23Z', 'customer_departure_time': nan, 'ingested_at': '2026-09-24T07:37:51Z', 'order_items_typo_fixed': False, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-09-24 11:22:54,668 | INFO | loaded 853 record(s) from 34 S3 batch file(s)
+2026-09-24 11:23:00,725 | INFO | ============================================================
+2026-09-24 11:23:00,725 | INFO | Starting ETL Pipeline
+2026-09-24 11:23:00,725 | INFO | ============================================================
+2026-09-24 11:23:00,788 | INFO | CSV files loaded successfully.
+2026-09-24 11:23:00,788 | INFO | Loading branches...
+2026-09-24 11:23:06,760 | INFO | 20 branches loaded.
+2026-09-24 11:23:06,760 | INFO | Loading menu items...
+2026-09-24 11:23:08,330 | INFO | 13 menu items loaded.
+2026-09-24 11:23:08,330 | INFO | Loading sales...
+2026-09-24 11:25:56,726 | INFO | 800 sales loaded.
+2026-09-24 11:25:56,727 | INFO | Loading sales items...
+2026-09-24 11:26:00,915 | WARNING | Menu item not found: ofaad rice
+2026-09-24 11:26:01,255 | WARNING | Menu item not found: hcicken wings
+2026-09-24 11:26:01,558 | WARNING | Menu item not found: hcapman
+2026-09-24 11:26:05,241 | WARNING | Menu item not found: puffp uff
+2026-09-24 11:26:23,755 | WARNING | Menu item not found: grillde fish
+2026-09-24 11:26:27,493 | WARNING | Menu item not found: grille dfish
+2026-09-24 11:26:44,315 | WARNING | Menu item not found: chickne wings
+2026-09-24 11:26:45,757 | WARNING | Menu item not found: grilled ifsh
+2026-09-24 11:26:48,817 | WARNING | Menu item not found: hcapman
+2026-09-24 11:26:49,290 | WARNING | Menu item not found: zboo
+2026-09-24 11:26:52,833 | WARNING | Menu item not found: cihcken wings
+2026-09-24 11:26:55,255 | WARNING | Menu item not found: burgre
+2026-09-24 11:26:56,182 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(25813834-120d-4f22-ac07-b15ab55a8869) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 180, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 396, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(25813834-120d-4f22-ac07-b15ab55a8869) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': '25813834-120d-4f22-ac07-b15ab55a8869', 'menu_item_id': 49, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 12:54:41,414 | INFO | loaded 1325 record(s) from 53 S3 batch file(s)
+2026-09-24 12:54:52,094 | INFO | ============================================================
+2026-09-24 12:54:52,094 | INFO | Starting ETL Pipeline
+2026-09-24 12:54:52,094 | INFO | ============================================================
+2026-09-24 12:54:52,162 | INFO | CSV files loaded successfully.
+2026-09-24 12:54:52,162 | INFO | Loading branches...
+2026-09-24 12:55:01,925 | INFO | 20 branches loaded.
+2026-09-24 12:55:01,925 | INFO | Loading menu items...
+2026-09-24 12:55:05,460 | INFO | 13 menu items loaded.
+2026-09-24 12:56:25,038 | INFO | loaded 1325 record(s) from 53 S3 batch file(s)
+2026-09-24 12:56:33,916 | INFO | ============================================================
+2026-09-24 12:56:33,916 | INFO | Starting ETL Pipeline
+2026-09-24 12:56:33,916 | INFO | ============================================================
+2026-09-24 12:56:33,970 | INFO | CSV files loaded successfully.
+2026-09-24 12:56:33,970 | INFO | Loading branches...
+2026-09-24 12:56:44,166 | INFO | 20 branches loaded.
+2026-09-24 12:56:44,166 | INFO | Loading menu items...
+2026-09-24 12:56:47,239 | INFO | 13 menu items loaded.
+2026-09-24 12:56:47,276 | INFO | Loading sales...
+2026-09-24 13:05:18,356 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 182, in run_pipeline
+    load_sales(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 282, in load_sales
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: 
+        INSERT INTO sales (
+            record_id,
+            transaction_id,
+            batch_id,
+            branch_id,
+            membership_id,
+            order_channel,
+            order_subtotal,
+            discount_applied,
+            total_amount,
+            payment_method,
+            transaction_status,
+            order_source,
+            customer_arrival_time,
+            customer_departure_time,
+            ingested_at,
+            order_items_typo_fixed,
+            total_amount_imputed,
+            imputation_method
+        )
+
+        VALUES (
+
+            %(record_id)s,
+            %(transaction_id)s,
+            %(batch_id)s,
+            %(branch_id)s,
+            %(membership_id)s,
+            %(order_channel)s,
+            %(order_subtotal)s,
+            %(discount_applied)s,
+            %(total_amount)s,
+            %(payment_method)s,
+            %(transaction_status)s,
+            %(order_source)s,
+            %(customer_arrival_time)s,
+            %(customer_departure_time)s,
+            %(ingested_at)s,
+            %(order_items_typo_fixed)s,
+            %(total_amount_imputed)s,
+            %(imputation_method)s
+
+        )
+
+        ON CONFLICT (transaction_id)
+
+        DO UPDATE SET
+
+            total_amount = EXCLUDED.total_amount,
+            transaction_status = EXCLUDED.transaction_status,
+            payment_method = EXCLUDED.payment_method,
+            order_subtotal = EXCLUDED.order_subtotal,
+            discount_applied = EXCLUDED.discount_applied,
+            total_amount_imputed = EXCLUDED.total_amount_imputed,
+            imputation_method = EXCLUDED.imputation_method;
+
+    ]
+[parameters: {'record_id': '05fe5230-7d49-4f2a-9fb4-3be2015da8e3', 'transaction_id': 'TXN-47405717', 'batch_id': 'BATCH-e5ac1e2b-927f-4320-915b-dba375f90956', 'branch_id': 'BR-10', 'membership_id': 'MBR-871879', 'order_channel': 'ONLINE', 'order_subtotal': 5247.93, 'discount_applied': 0.0, 'total_amount': 5247.93, 'payment_method': 'CASH', 'transaction_status': 'COMPLETED', 'order_source': 'ONLINE', 'customer_arrival_time': '2026-09-24T13:05:41Z', 'customer_departure_time': '2026-09-24T13:46:41Z', 'ingested_at': '2026-09-24T10:37:51Z', 'order_items_typo_fixed': True, 'total_amount_imputed': False, 'imputation_method': None}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-09-24 13:10:20,543 | INFO | loaded 0 record(s) from 0 S3 batch file(s)
+2026-09-24 13:16:35,005 | INFO | loaded 230 record(s) from 9 S3 batch file(s)
+2026-09-24 13:16:39,525 | INFO | ============================================================
+2026-09-24 13:16:39,525 | INFO | Starting ETL Pipeline
+2026-09-24 13:16:39,525 | INFO | ============================================================
+2026-09-24 13:16:39,590 | INFO | CSV files loaded successfully.
+2026-09-24 13:16:39,590 | INFO | Loading branches...
+2026-09-24 13:16:47,695 | INFO | 20 branches loaded.
+2026-09-24 13:16:47,695 | INFO | Loading menu items...
+2026-09-24 13:16:50,802 | INFO | 13 menu items loaded.
+2026-09-24 13:16:50,806 | INFO | Loading sales...
+2026-09-24 13:17:32,398 | INFO | 216 sales loaded.
+2026-09-24 13:17:32,398 | INFO | Loading sales items...
+2026-09-24 13:17:33,429 | WARNING | Menu item not found: coleslwa
+2026-09-24 13:17:38,699 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 186, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 411, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': '52c5553a-ca69-49b8-8f7c-008859ecd0ee', 'menu_item_id': 89, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 13:24:00,855 | INFO | loaded 288 record(s) from 11 S3 batch file(s)
+2026-09-24 13:24:05,623 | INFO | ============================================================
+2026-09-24 13:24:05,624 | INFO | Starting ETL Pipeline
+2026-09-24 13:24:05,624 | INFO | ============================================================
+2026-09-24 13:24:05,732 | INFO | CSV files loaded successfully.
+2026-09-24 13:24:05,732 | INFO | Loading branches...
+2026-09-24 13:24:18,467 | INFO | 20 branches loaded.
+2026-09-24 13:24:18,467 | INFO | Loading menu items...
+2026-09-24 13:24:20,770 | INFO | 13 menu items loaded.
+2026-09-24 13:24:20,775 | INFO | Loading sales...
+2026-09-24 13:25:29,424 | INFO | 273 sales loaded.
+2026-09-24 13:25:29,425 | INFO | Loading sales items...
+2026-09-24 13:25:31,700 | WARNING | Menu item not found: coleslwa
+2026-09-24 13:25:36,121 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 191, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 416, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': '52c5553a-ca69-49b8-8f7c-008859ecd0ee', 'menu_item_id': 102, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 13:31:49,418 | INFO | loaded 318 record(s) from 12 S3 batch file(s)
+2026-09-24 13:31:53,638 | INFO | ============================================================
+2026-09-24 13:31:53,638 | INFO | Starting ETL Pipeline
+2026-09-24 13:31:53,638 | INFO | ============================================================
+2026-09-24 13:31:53,702 | INFO | CSV files loaded successfully.
+2026-09-24 13:31:53,702 | INFO | Loading branches...
+2026-09-24 13:32:01,057 | INFO | 20 branches loaded.
+2026-09-24 13:32:01,057 | INFO | Loading menu items...
+2026-09-24 13:32:03,829 | INFO | 13 menu items loaded.
+2026-09-24 13:32:03,860 | INFO | Loading sales...
+2026-09-24 13:33:07,908 | INFO | 301 sales loaded.
+2026-09-24 13:33:07,908 | INFO | Loading sales items...
+2026-09-24 13:33:08,886 | WARNING | Menu item not found: coleslwa
+2026-09-24 13:33:14,257 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 191, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 416, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': '52c5553a-ca69-49b8-8f7c-008859ecd0ee', 'menu_item_id': 115, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 13:36:07,860 | INFO | loaded 347 record(s) from 13 S3 batch file(s)
+2026-09-24 13:36:12,546 | INFO | ============================================================
+2026-09-24 13:36:12,546 | INFO | Starting ETL Pipeline
+2026-09-24 13:36:12,546 | INFO | ============================================================
+2026-09-24 13:36:12,605 | INFO | CSV files loaded successfully.
+2026-09-24 13:36:12,605 | INFO | Loading branches...
+2026-09-24 13:36:20,073 | INFO | 20 branches loaded.
+2026-09-24 13:36:20,073 | INFO | Loading menu items...
+2026-09-24 13:36:22,774 | INFO | 13 menu items loaded.
+2026-09-24 13:36:22,795 | INFO | Loading sales...
+2026-09-24 13:38:23,657 | INFO | 328 sales loaded.
+2026-09-24 13:38:23,969 | INFO | Loading sales items...
+2026-09-24 13:38:25,900 | WARNING | Menu item not found: coleslwa
+2026-09-24 13:38:32,964 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 214, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 439, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': '52c5553a-ca69-49b8-8f7c-008859ecd0ee', 'menu_item_id': 128, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 13:51:47,804 | INFO | loaded 425 record(s) from 16 S3 batch file(s)
+2026-09-24 13:51:52,366 | INFO | ============================================================
+2026-09-24 13:51:52,367 | INFO | Starting ETL Pipeline
+2026-09-24 13:51:52,367 | INFO | ============================================================
+2026-09-24 13:51:52,430 | INFO | CSV files loaded successfully.
+2026-09-24 13:51:52,431 | INFO | Loading branches...
+2026-09-24 13:51:59,854 | INFO | 20 branches loaded.
+2026-09-24 13:51:59,854 | INFO | Loading menu items...
+2026-09-24 13:52:03,025 | INFO | 13 menu items loaded.
+2026-09-24 13:52:03,059 | INFO | Loading sales...
+2026-09-24 13:53:32,634 | INFO | 400 sales loaded.
+2026-09-24 13:53:32,880 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 191, in run_pipeline
+    sales.to_csv(sales_df)
+                 ^^^^^^^^
+NameError: name 'sales_df' is not defined
+2026-09-24 13:57:42,040 | INFO | loaded 454 record(s) from 17 S3 batch file(s)
+2026-09-24 13:57:47,060 | INFO | ============================================================
+2026-09-24 13:57:47,060 | INFO | Starting ETL Pipeline
+2026-09-24 13:57:47,060 | INFO | ============================================================
+2026-09-24 13:57:47,123 | INFO | CSV files loaded successfully.
+2026-09-24 13:57:47,123 | INFO | Loading branches...
+2026-09-24 13:58:05,825 | INFO | 20 branches loaded.
+2026-09-24 13:58:05,825 | INFO | Loading menu items...
+2026-09-24 13:58:10,176 | INFO | 13 menu items loaded.
+2026-09-24 13:58:10,209 | INFO | Loading sales...
+2026-09-24 13:59:34,639 | INFO | 426 sales loaded.
+2026-09-24 13:59:34,888 | INFO | Loading sales items...
+2026-09-24 13:59:36,963 | WARNING | Menu item not found: coleslwa
+2026-09-24 13:59:40,666 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 217, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 442, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(52c5553a-ca69-49b8-8f7c-008859ecd0ee) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': '52c5553a-ca69-49b8-8f7c-008859ecd0ee', 'menu_item_id': 154, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 14:09:43,558 | INFO | loaded 212 record(s) from 8 S3 batch file(s)
+2026-09-24 14:09:47,259 | INFO | ============================================================
+2026-09-24 14:09:47,259 | INFO | Starting ETL Pipeline
+2026-09-24 14:09:47,259 | INFO | ============================================================
+2026-09-24 14:09:47,326 | INFO | CSV files loaded successfully.
+2026-09-24 14:09:47,327 | INFO | Loading branches...
+2026-09-24 14:10:00,335 | INFO | 20 branches loaded.
+2026-09-24 14:10:00,335 | INFO | Loading menu items...
+2026-09-24 14:10:03,183 | INFO | 13 menu items loaded.
+2026-09-24 14:10:03,187 | INFO | Loading sales...
+2026-09-24 14:10:44,996 | INFO | 200 sales loaded.
+2026-09-24 14:10:45,609 | INFO | Loading sales items...
+2026-09-24 14:10:45,739 | WARNING | Menu item not found: pfuf puff
+2026-09-24 14:10:46,584 | ERROR | Pipeline failed.
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(5b0196d7-6c84-48db-9a2d-cca1df37f6dc) is not present in table "sales".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 217, in run_pipeline
+    load_sales_items(session, sales)
+  File "/home/manuel7tin/GithubRepos/qufoods/lambda/src/sql_storage/etl_pipeline.py", line 442, in load_sales_items
+    session.execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2280, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/manuel7tin/GithubRepos/qufoods/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "sales_items" violates foreign key constraint "fk_sales"
+DETAIL:  Key (record_id)=(5b0196d7-6c84-48db-9a2d-cca1df37f6dc) is not present in table "sales".
+
+[SQL: 
+        INSERT INTO sales_items (
+            record_id,
+            menu_item_id,
+            quantity
+        )
+        VALUES (
+            %(record_id)s,
+            %(menu_item_id)s,
+            %(quantity)s
+        )
+        ON CONFLICT (record_id, menu_item_id)
+        DO UPDATE
+        SET quantity = EXCLUDED.quantity;
+    ]
+[parameters: {'record_id': '5b0196d7-6c84-48db-9a2d-cca1df37f6dc', 'menu_item_id': 167, 'quantity': 1}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-24 14:24:48,275 | INFO | loaded 0 record(s) from 0 S3 batch file(s)
+2026-09-24 14:26:10,865 | INFO | loaded 133 record(s) from 5 S3 batch file(s)
+2026-09-24 14:26:14,681 | INFO | ============================================================
+2026-09-24 14:26:14,682 | INFO | Starting ETL Pipeline
+2026-09-24 14:26:14,682 | INFO | ============================================================
+2026-09-24 14:26:14,745 | INFO | CSV files loaded successfully.
+2026-09-24 14:26:14,745 | INFO | Loading branches...
+2026-09-24 14:26:20,698 | INFO | 20 branches loaded.
+2026-09-24 14:26:20,698 | INFO | Loading menu items...
+2026-09-24 14:26:22,991 | INFO | 13 menu items loaded.
+2026-09-24 14:33:25,167 | INFO | loaded 163 record(s) from 6 S3 batch file(s)
+2026-09-24 14:33:28,366 | INFO | ============================================================
+2026-09-24 14:33:28,366 | INFO | Starting ETL Pipeline
+2026-09-24 14:33:28,366 | INFO | ============================================================
+2026-09-24 14:33:28,430 | INFO | CSV files loaded successfully.
+2026-09-24 14:33:28,430 | INFO | Loading branches...
+2026-09-24 14:33:34,249 | INFO | 20 branches loaded.
+2026-09-24 14:33:34,249 | INFO | Loading menu items...
+2026-09-24 14:33:36,148 | INFO | 13 menu items loaded.
+2026-09-24 14:36:32,918 | INFO | loaded 163 record(s) from 6 S3 batch file(s)
+2026-09-24 14:36:36,613 | INFO | ============================================================
+2026-09-24 14:36:36,613 | INFO | Starting ETL Pipeline
+2026-09-24 14:36:36,613 | INFO | ============================================================
+2026-09-24 14:36:36,679 | INFO | CSV files loaded successfully.
+2026-09-24 14:36:36,679 | INFO | Loading branches...
+2026-09-24 14:36:44,532 | INFO | 20 branches loaded.
+2026-09-24 14:36:44,532 | INFO | Loading menu items...
+2026-09-24 14:36:46,949 | INFO | 13 menu items loaded.
+2026-09-24 14:36:46,954 | INFO | Loading sales...
+2026-09-24 14:37:13,459 | INFO | 151 sales loaded.
+2026-09-24 14:37:13,720 | INFO | Loading sales items...
+2026-09-24 14:37:13,908 | WARNING | Menu item not found: pfuf puff
+2026-09-24 14:37:16,841 | WARNING | Menu item not found: coelslaw
+2026-09-24 14:37:17,794 | WARNING | Menu item not found: chickne wings
+2026-09-24 14:37:27,602 | WARNING | Menu item not found: fried rcie
+2026-09-24 14:37:32,300 | WARNING | Menu item not found: chapmna
+2026-09-24 14:37:33,042 | WARNING | Menu item not found: chickne wings
+2026-09-24 14:37:33,227 | WARNING | Menu item not found: lpantain
+2026-09-24 14:37:33,519 | WARNING | Menu item not found: fride rice
+2026-09-24 14:37:34,498 | WARNING | Menu item not found: puf fpuff
+2026-09-24 14:37:44,090 | WARNING | Menu item not found: chicken iwngs
+2026-09-24 14:37:50,554 | WARNING | Menu item not found: plnatain
+2026-09-24 14:37:50,821 | WARNING | Menu item not found: jollo frice
+2026-09-24 14:37:51,206 | WARNING | Menu item not found: rfied rice
+2026-09-24 14:37:51,207 | WARNING | Menu item not found: jollfo rice
+2026-09-24 14:37:55,239 | WARNING | Menu item not found: cahpman
+2026-09-24 14:37:56,825 | WARNING | Menu item not found: zoob
+2026-09-24 14:37:59,753 | WARNING | Menu item not found: foada rice
+2026-09-24 14:38:01,391 | WARNING | Menu item not found: chicke nwings
+2026-09-24 14:38:11,299 | WARNING | Menu item not found: ocke
+2026-09-24 14:38:11,681 | WARNING | Menu item not found: burgre
+2026-09-24 14:38:14,917 | WARNING | Menu item not found: chapamn
+2026-09-24 14:38:17,482 | WARNING | Menu item not found: ozbo
+2026-09-24 14:38:19,732 | WARNING | Menu item not found: plnatain
+2026-09-24 14:38:27,807 | WARNING | Menu item not found: zoob
+2026-09-24 14:38:29,399 | WARNING | Menu item not found: ckoe
+2026-09-24 14:38:31,241 | INFO | 368 sales items loaded.
+2026-09-24 14:38:31,241 | INFO | Loading expenses...
+2026-09-24 14:38:33,703 | INFO | 12 expenses loaded.
+2026-09-24 14:38:33,941 | INFO | ETL completed successfully.
